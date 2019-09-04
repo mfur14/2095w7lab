@@ -42,7 +42,7 @@ app.get('/', function(req, res){  // homepage with links
 
 app.get('/alltasks', function(req, res){  // list all tasks page
     col.find({}).toArray(function(err, data){
-        res.render('alltasks', {tasksDb :data});  // change to {col: data} if experiencing delay
+        res.render('alltasks', {tasksDb :data});  
     });
 });
 
@@ -94,13 +94,12 @@ app.get('/deleteCompleted', function(req, res){
     res.redirect('/alltasks');
 });
 
-// app.post('/deleteOldComplete', function(req, res){
-//     // let filter = {status: "Complete"};
-//     let filter = { $and: [ { status: "Complete"}, {dueDate: { $lt : "todaysdate"}}]};
-//     col.deleteMany(filter, function(err, obj){
-//         console.log(obj);
-//     });
-//     res.redirect('/alltasks');
-// });
+app.get('/deleteOldComplete', function(req, res){
+    // let filter = {status: "Complete"};
+    let filter = { $and: [ { status: "Complete"}, {dueDate: { $lt : "2019-09-04"}}]};
+    col.deleteMany(filter, function(err, obj){
+        console.log(obj);
+    });
+    res.redirect('/alltasks');
+});
 
-// db.inventory.find( { $and: [ { price: { $ne: 1.99 } }, { price: { $exists: true } } ] } )
