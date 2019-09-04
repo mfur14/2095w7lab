@@ -1,0 +1,26 @@
+img {
+    width: 50px;
+    height: 50px;
+}
+
+h1 {
+    color:#ff8000;
+}
+
+h3 {
+    color: #ffad33;
+}
+
+table,th {
+    border: 3px solid #ffb84d;
+    color: #995c00;
+}
+
+td {
+    border: 1px solid #ffb84d;
+    color: #995c00;
+}
+
+body {
+    background-color: #e6fffa;
+  }
