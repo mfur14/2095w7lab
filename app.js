@@ -3,7 +3,7 @@ let express = require('express');
 let bodyParser = require('body-parser');
 let mongodb = require('mongodb');
 let morgan = require('morgan');
-let moment = require('moment'); // for date time
+//let moment = require('moment'); // for date time
 
 
 // app configurations
@@ -56,7 +56,7 @@ app.post('/addTask', function(req, res){
     };
     req.body.tId = getNewId();
     myNewTaskObj = {taskId: parseInt(req.body.tId),taskName: req.body.tName, assignTo: req.body.aTo, 
-        dueDate: moment(req.body.dDate), status: req.body.tStatus, desc: req.body.tDesc};  
+        dueDate: req.body.dDate, status: req.body.tStatus, desc: req.body.tDesc};  
         // have to parse date into date format
     col.insertOne(myNewTaskObj);
     res.redirect("/alltasks"); 
