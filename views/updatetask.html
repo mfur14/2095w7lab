@@ -6,12 +6,13 @@
         <p>
             <a href="/">Home</a><br><br>
             <a href="/newtask">Insert new task</a><br>
+            <a href="/newdeveloper">Add new developer</a></br>
             <a href="/alltasks">All tasks</a><br>
             <a href="/deletetask">Delete a task</a><br>
             <a href="/deleteCompleted">Delete completed tasks</a>
         </p>
         <form action="/taskUpdate" method="POST">
-            Task ID: <input type="number" name="tId" /><br>
+            Task ID: <input type="string" name="tId" /><br>
             Update status: (InProgress/Complete) <input type="text" name="tStatus" /><br>
             <button>Update</button>
         </form>

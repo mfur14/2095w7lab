@@ -6,52 +6,63 @@
         <p>
             <a href="/">Home</a><br><br>
             <a href="/newtask">Insert new task</a><br>
-            <a href="/newdeveloper">Add new developer</a></br>
-            <a href="/alldevs">All developers</a><br>
+            <a href="/newdeveloper">Add developer</a></br>
             <a href="/updatetask">Update task</a><br>
             <a href="/deletetask">Delete a task</a><br>
-            <a href="/deleteCompleted">Delete completed tasks</a>
+            <a href="/deleteCompleted">Delete completed tasks</a><br>
         </p>
         <table>
             <tr>
                 <th>
-                    Task ID
+                    Developer ID
                 </th>
                 <th>
-                    Task name
+                    First name
                 </th>
                 <th>
-                    Assignee
+                    Last name
                 </th>
                 <th>
-                    Due date
+                    Level
                 </th>
                 <th>
-                    Status
+                    State
                 </th>
                 <th>
-                    Description
+                    Suburb
+                </th>
+                <th>
+                    Street
+                </th>
+                <th>
+                    Unit
                 </th>
             </tr>
-            <% for (let i=0; i<tasksDb.length; i++){ %>
+            <% for (let i=0; i<devDb.length; i++){ %>
                 <tr>
                     <td>
-                        <%= tasksDb[i]._id %> 
+                        <%= devDb[i]._id %> 
                     </td>
                     <td>
-                        <%= tasksDb[i].name %> 
+                        <%= devDb[i].name.firstName %> 
                     </td>
                     <td>
-                        <%= tasksDb[i].developer %> 
+                        <%= devDb[i].name.lastName %> 
                     </td>
                     <td>
-                        <%= tasksDb[i].date %> 
+                        <%= devDb[i].level %> 
                     </td>
                     <td>
-                        <%= tasksDb[i].status %> 
+                        <%= devDb[i].state %> 
                     </td>
                     <td>
-                        <%= tasksDb[i].desc %> 
+                        <%= devDb[i].suburb %> 
+                    </td>
+                    <td>
+                        <%= devDb[i].street %> 
+                    </td>
+                    <td>
+                        <%= devDb[i].unit %> 
                     </td>
                 </tr>
             <% } %>

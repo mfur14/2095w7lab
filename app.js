@@ -1,10 +1,7 @@
 // import packages
 let express = require('express');
 let bodyParser = require('body-parser');
-let mongodb = require('mongodb');
-let morgan = require('morgan');
-//let moment = require('moment'); // for date time
-
+let mongoose = require('mongoose');
 
 // app configurations
 let app = express();
@@ -12,107 +9,156 @@ app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(morgan('common'));
+//app.use(morgan('common'));
 app.use(express.static('images')); // static images directory <-- no installation required just a directory 
 app.use(express.static('css'));  // static css directory
 app.listen(8888);
 
-
-// configure mongodb
-let MongoDBClient = mongodb.MongoClient;
-let url = "mongodb://localhost:27017";
-
-// global variables
-let db = null;
-let col = null;
-let pathName = __dirname+"/views/";
-
-// connect to MongoDB server
-MongoDBClient.connect(url, {useUnifiedTopology: true, useNewUrlParser: true}, function(err, client){
-    db = client.db('w6lab');
-    col = db.collection('tasks');
+// connection to db
+mongoose.set('useNewUrlParser', true);
+mongoose.connect("mongodb://localhost:27017/w7lab", function(err){
+    if(err){
+        console.log("connection unsuccessful");
+        throw err;
+    } else {
+        console.log("Connected successfully!");
+    }
 });
 
-// --- methods ---
+// require models
+var task = require("./models/task");
+var developer = require("./models/developer");
+// app.use(express.static('models')); <- is this the same as this ^
+
+// views directory
+let pathName = __dirname+"/views/";
+
+// made schemas and models. Start with 5a. // do we need a save function // how to do a select box thing
+
+// homepage
 app.get('/', function(req, res){  // homepage with links
     res.sendFile(pathName+"index.html");
 });
 
-app.get('/alltasks', function(req, res){  // list all tasks page
-    col.find({}).toArray(function(err, data){
-        res.render('alltasks', {tasksDb :data});  
+// list tasks 
+app.get('/alltasks', function(req, res){
+    task.find().exec(function(err, data){
+        if (err) {
+            console.log(err);
+            throw err;
+        } else {
+            console.log(data);
+            res.render('alltasks', {tasksDb: data});
+        }
     });
 });
 
+// add new task
 app.get('/newtask', function(req, res){  // new task page
     res.sendFile(pathName+"newtask.html");
 });
 
 app.post('/addTask', function(req, res){
-    function getNewId() {  // function to generate unique id
-        return (Math.floor(100000 + Math.random() * 900000));
-    };
-    req.body.tId = getNewId();
-    myNewTaskObj = {taskId: parseInt(req.body.tId),taskName: req.body.tName, assignTo: req.body.aTo, 
-        dueDate: req.body.dDate, status: req.body.tStatus, desc: req.body.tDesc};  
-        // have to parse date into date format
-    col.insertOne(myNewTaskObj);
-    res.redirect("/alltasks"); 
+    task.create({
+        name: req.body.tName,
+        developer: new mongoose.Types.ObjectId(req.params.aTo),
+        date: req.body.dDate,
+        status: req.body.tStatus,
+        desc: req.body.tDesc,
+    }, function(err){
+        if(err){
+            throw err;
+        }else{
+            console.log(req.body);
+            res.redirect('/alltasks');
+        }
+    });
 });
 
+// list developers
+app.get("/alldevs", function(req, res){
+    developer.find().exec(function(err, data){
+        if (err) {
+            console.log(err);
+            throw err;
+        } else {
+            console.log(data);
+            res.render('alldevelopers', {devDb: data});
+            //res.send(data);
+        }
+    });
+});
+
+// add new developer
+app.get('/newdeveloper', function(req, res){  // new developer page
+    res.sendFile(pathName+"newdeveloper.html");
+});
+
+app.post('/adddeveloper', function(req, res){
+    developer.create({
+        name:{ firstName: req.body.fName,
+                lastName: req.body.lName},
+        level: req.body.level,
+        state: req.body.state,
+        suburb: req.body.suburb,
+        street: req.body.street,
+        unit: req.body.unit
+    }, function(err){
+        if(err){
+            throw err;
+        }else{
+            console.log(req.body);
+            res.redirect('/alldevs');
+        }
+    });
+});
+
+// update task by id
 app.get('/updatetask', function(req, res){  // update task page
     res.sendFile(pathName+"updatetask.html");
 });
 
 app.post('/taskUpdate', function(req, res){  // updates tasks
-    let obj = req.body;
-    col.updateOne({taskId: parseInt(obj.tId)}, {$set: {status: obj.tStatus}}, {upsert: false}, function(err, result){
-        console.log(result);
+    task.updateOne({ '_id': req.body.tId }, { $set: { 'status': req.body.tStatus } }, function (err) {
+        if(err){
+            throw err;
+        }else{
+            console.log(req.body);
+            res.redirect('/alltasks');
+        }
     });
-    res.redirect('/alltasks');
 });
 
-
+// delete task by id
 app.get('/deletetask', function(req, res){  // delete task page
     res.sendFile(pathName+"deletetask.html");
 });
 
 app.post('/deleteTask', function(req, res){
-    let obJ = req.body;
-    let query = {taskId:  parseInt(obJ.tId)};
-    col.deleteOne(query);
-    res.redirect('/alltasks');
+    task.deleteOne({ '_id': req.body.tId }, function (err) {
+        if(err){
+            throw err;
+        }else{
+            console.log(req.body);
+            res.redirect('/alltasks');
+        }
+    });
 });
 
+// delete all complete tasks
 app.get('/deleteCompleted', function(req, res){
-    let filter = {status: "Complete"};
-    col.deleteMany(filter, function(err, obj){
-        console.log(obj);
+    task.deleteMany({ 'status': 'Complete' }, function (err, doc) {
+        if(err){
+            throw err;
+        }else{
+            console.log(req.body);
+            res.redirect('/alltasks');
+        }
     });
-    res.redirect('/alltasks');
 });
 
-app.get('/deleteOldComplete', function(req, res){  // delete completed & past due date tasks
-    // let filter = {status: "Complete"};
-    let filter = { $and: [ { status: "Complete"}, {dueDate: { $lt : "2019-09-04"}}]};
-    col.deleteMany(filter, function(err, obj){
-        console.log(obj);
-    });
-    res.redirect('/alltasks');
-});
 
-// app.get('/deleteOldCompleteMoment', function(req, res){
-//     now = moment().format("YYYY-MM-DD");
-//     let filter = { $and: [ { status: "Complete"}, {dueDate: { $lt : now}}]};
-//     col.deleteMany(filter, function(err, obj){
-//         console.log(obj);
-//         console.log(now);
-//     });
-//     res.redirect('/alltasks');
-// });
+// add  4 tasks
+app.get('/4tasks', function(req, res){
     
-// app.get('/time', function(req, res){
-//     now = moment().format("YYYY-MM-DD");
-//     console.log(mom);
-// });
-    
+});
