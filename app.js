@@ -159,6 +159,27 @@ app.get('/deleteCompleted', function(req, res){
 
 
 // add  4 tasks
-app.get('/4tasks', function(req, res){
+app.post('/4tasks', function(req, res){
+    for(let i=0; i == 4;i++){
+        task.create({
+            name: req.body.tName,
+            developer: new mongoose.Types.ObjectId(req.params.aTo),
+            date: req.body.dDate,
+            status: req.body.tStatus,
+            desc: req.body.tDesc,
+        }, function(err){
+            if(err){
+                throw err;
+            }else{
+                console.log(req.body);
+                console.log(i);
+                //res.redirect('/alltasks');
+            }
+        });
+    };
+    res.redirect('/alltasks');
+});
+
+app.get('/4tasks', function(req,res){
     
 });
