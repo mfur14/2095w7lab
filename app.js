@@ -101,10 +101,12 @@ app.post('/adddeveloper', function (req, res) {
             lastName: req.body.lName
         },
         level: req.body.level,
-        state: req.body.state,
-        suburb: req.body.suburb,
-        street: req.body.street,
-        unit: req.body.unit
+        address:{
+            state: req.body.state,
+            suburb: req.body.suburb,
+            street: req.body.street,
+            unit: req.body.unit
+        }
     }, function (err) {
         if (err) {
             throw err;
