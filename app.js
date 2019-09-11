@@ -16,8 +16,8 @@ app.listen(8888);
 
 // connection to db
 mongoose.set('useNewUrlParser', true);
-mongoose.connect("mongodb://localhost:27017/w7lab", function(err){
-    if(err){
+mongoose.connect("mongodb://localhost:27017/w7lab", function (err) {
+    if (err) {
         console.log("connection unsuccessful");
         throw err;
     } else {
@@ -31,44 +31,44 @@ var developer = require("./models/developer");
 // app.use(express.static('models')); <- is this the same as this ^
 
 // views directory
-let pathName = __dirname+"/views/";
+let pathName = __dirname + "/views/";
 
 // made schemas and models. Start with 5a. // do we need a save function // how to do a select box thing
 
 // homepage
-app.get('/', function(req, res){  // homepage with links
-    res.sendFile(pathName+"index.html");
+app.get('/', function (req, res) {  // homepage with links
+    res.sendFile(pathName + "index.html");
 });
 
 // list tasks 
-app.get('/alltasks', function(req, res){
-    task.find().exec(function(err, data){
+app.get('/alltasks', function (req, res) {
+    task.find().exec(function (err, data) {
         if (err) {
             console.log(err);
             throw err;
         } else {
             console.log(data);
-            res.render('alltasks', {tasksDb: data});
+            res.render('alltasks', { tasksDb: data });
         }
     });
 });
 
 // add new task
-app.get('/newtask', function(req, res){  // new task page
-    res.sendFile(pathName+"newtask.html");
+app.get('/newtask', function (req, res) {  // new task page
+    res.sendFile(pathName + "newtask.html");
 });
 
-app.post('/addTask', function(req, res){
+app.post('/addTask', function (req, res) {
     task.create({
         name: req.body.tName,
         developer: new mongoose.Types.ObjectId(req.params.aTo),
         date: req.body.dDate,
         status: req.body.tStatus,
         desc: req.body.tDesc,
-    }, function(err){
-        if(err){
+    }, function (err) {
+        if (err) {
             throw err;
-        }else{
+        } else {
             console.log(req.body);
             res.redirect('/alltasks');
         }
@@ -76,37 +76,39 @@ app.post('/addTask', function(req, res){
 });
 
 // list developers
-app.get("/alldevs", function(req, res){
-    developer.find().exec(function(err, data){
+app.get("/alldevs", function (req, res) {
+    developer.find().exec(function (err, data) {
         if (err) {
             console.log(err);
             throw err;
         } else {
             console.log(data);
-            res.render('alldevelopers', {devDb: data});
+            res.render('alldevelopers', { devDb: data });
             //res.send(data);
         }
     });
 });
 
 // add new developer
-app.get('/newdeveloper', function(req, res){  // new developer page
-    res.sendFile(pathName+"newdeveloper.html");
+app.get('/newdeveloper', function (req, res) {  // new developer page
+    res.sendFile(pathName + "newdeveloper.html");
 });
 
-app.post('/adddeveloper', function(req, res){
+app.post('/adddeveloper', function (req, res) {
     developer.create({
-        name:{ firstName: req.body.fName,
-                lastName: req.body.lName},
+        name: {
+            firstName: req.body.fName,
+            lastName: req.body.lName
+        },
         level: req.body.level,
         state: req.body.state,
         suburb: req.body.suburb,
         street: req.body.street,
         unit: req.body.unit
-    }, function(err){
-        if(err){
+    }, function (err) {
+        if (err) {
             throw err;
-        }else{
+        } else {
             console.log(req.body);
             res.redirect('/alldevs');
         }
@@ -114,15 +116,15 @@ app.post('/adddeveloper', function(req, res){
 });
 
 // update task by id
-app.get('/updatetask', function(req, res){  // update task page
-    res.sendFile(pathName+"updatetask.html");
+app.get('/updatetask', function (req, res) {  // update task page
+    res.sendFile(pathName + "updatetask.html");
 });
 
-app.post('/taskUpdate', function(req, res){  // updates tasks
+app.post('/taskUpdate', function (req, res) {  // updates tasks
     task.updateOne({ '_id': req.body.tId }, { $set: { 'status': req.body.tStatus } }, function (err) {
-        if(err){
+        if (err) {
             throw err;
-        }else{
+        } else {
             console.log(req.body);
             res.redirect('/alltasks');
         }
@@ -130,15 +132,15 @@ app.post('/taskUpdate', function(req, res){  // updates tasks
 });
 
 // delete task by id
-app.get('/deletetask', function(req, res){  // delete task page
-    res.sendFile(pathName+"deletetask.html");
+app.get('/deletetask', function (req, res) {  // delete task page
+    res.sendFile(pathName + "deletetask.html");
 });
 
-app.post('/deleteTask', function(req, res){
+app.post('/deleteTask', function (req, res) {
     task.deleteOne({ '_id': req.body.tId }, function (err) {
-        if(err){
+        if (err) {
             throw err;
-        }else{
+        } else {
             console.log(req.body);
             res.redirect('/alltasks');
         }
@@ -146,11 +148,11 @@ app.post('/deleteTask', function(req, res){
 });
 
 // delete all complete tasks
-app.get('/deleteCompleted', function(req, res){
+app.get('/deleteCompleted', function (req, res) {
     task.deleteMany({ 'status': 'Complete' }, function (err, doc) {
-        if(err){
+        if (err) {
             throw err;
-        }else{
+        } else {
             console.log(req.body);
             res.redirect('/alltasks');
         }
@@ -159,27 +161,33 @@ app.get('/deleteCompleted', function(req, res){
 
 
 // add  4 tasks
-app.post('/4tasks', function(req, res){
-    for(let i=0; i == 4;i++){
-        task.create({
+app.post('/4task', function (req, res) {
+    let array = [];
+    for (let i = 0; i < 4; i++) {
+        array.push(new task ({
             name: req.body.tName,
             developer: new mongoose.Types.ObjectId(req.params.aTo),
             date: req.body.dDate,
             status: req.body.tStatus,
             desc: req.body.tDesc,
-        }, function(err){
-            if(err){
-                throw err;
-            }else{
-                console.log(req.body);
-                console.log(i);
-                //res.redirect('/alltasks');
-            }
-        });
+            }));
     };
-    res.redirect('/alltasks');
+
+    console.log("~~",array);
+
+    task.create(array, function (err) {  // no {} because we are not passing an object, but an array
+        if (err) {
+            throw err;
+        } else {
+            console.log(req.body);
+            // console.log(i);
+            res.redirect('/alltasks');
+        }
+    });
+
+    //res.redirect('/alltasks');
 });
 
-app.get('/4tasks', function(req,res){
-    
+app.get('/4tasks', function (req, res) {
+    res.sendFile(pathName + "newtask.html");
 });
