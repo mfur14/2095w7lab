@@ -7,7 +7,7 @@ let taskSchema = mongoose.Schema({
         ref: 'developer'
     },
     date:{
-        type: [Date],
+        type: Date,
     },
     status:{
         type: String,

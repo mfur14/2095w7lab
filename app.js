@@ -3,16 +3,17 @@ let express = require('express');
 let bodyParser = require('body-parser');
 let mongoose = require('mongoose');
 
+
 // app configurations
 let app = express();
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
-//app.use(morgan('common'));
 app.use(express.static('images')); // static images directory <-- no installation required just a directory 
 app.use(express.static('css'));  // static css directory
 app.listen(8888);
+
 
 // connection to db
 mongoose.set('useNewUrlParser', true);
@@ -25,20 +26,22 @@ mongoose.connect("mongodb://localhost:27017/w7lab", function (err) {
     }
 });
 
+
 // require models
 var task = require("./models/task");
 var developer = require("./models/developer");
 // app.use(express.static('models')); <- is this the same as this ^
 
+
 // views directory
 let pathName = __dirname + "/views/";
 
-// made schemas and models. Start with 5a. // do we need a save function // how to do a select box thing
 
 // homepage
 app.get('/', function (req, res) {  // homepage with links
     res.sendFile(pathName + "index.html");
 });
+
 
 // list tasks 
 app.get('/alltasks', function (req, res) {
@@ -74,6 +77,7 @@ app.post('/addTask', function (req, res) {
         }
     });
 });
+
 
 // list developers
 app.get("/alldevs", function (req, res) {
@@ -117,6 +121,7 @@ app.post('/adddeveloper', function (req, res) {
     });
 });
 
+
 // update task by id
 app.get('/updatetask', function (req, res) {  // update task page
     res.sendFile(pathName + "updatetask.html");
@@ -132,6 +137,7 @@ app.post('/taskUpdate', function (req, res) {  // updates tasks
         }
     });
 });
+
 
 // delete task by id
 app.get('/deletetask', function (req, res) {  // delete task page
@@ -149,6 +155,7 @@ app.post('/deleteTask', function (req, res) {
     });
 });
 
+
 // delete all complete tasks
 app.get('/deleteCompleted', function (req, res) {
     task.deleteMany({ 'status': 'Complete' }, function (err, doc) {
@@ -163,8 +170,12 @@ app.get('/deleteCompleted', function (req, res) {
 
 
 // add  4 tasks
-app.post('/4task', function (req, res) {
-    let array = [];
+app.get('/4task', function (req, res) {
+    res.sendFile(pathName + "fourtask.html");
+});
+
+app.post('/4task', function (req, res) {  // we store the object four times in an array, 
+    let array = [];                       // and then use the array to create documents in the db, object by object
     for (let i = 0; i < 4; i++) {
         array.push(new task ({
             name: req.body.tName,
@@ -186,10 +197,5 @@ app.post('/4task', function (req, res) {
             res.redirect('/alltasks');
         }
     });
-
-    //res.redirect('/alltasks');
 });
 
-app.get('/4tasks', function (req, res) {
-    res.sendFile(pathName + "newtask.html");
-});
