@@ -12,12 +12,12 @@ let developerSchema = mongoose.Schema({
         type: String,
         uppercase: true,
         required: true,
-        // validate:{   // try array instead
-        //     validator: function(value){
-        //         return value == "BEGINNER" || value == "EXPERT";
-        //     },
-        //     message: 'Level should be BEGINNER or EXPERT'
-        // }
+        validate:{   
+            validator: function(value){
+                return value === "BEGINNER" || value === "EXPERT";
+            },
+            message: 'Level should be BEGINNER or EXPERT'
+        }
     },
     address:{
         state: String,

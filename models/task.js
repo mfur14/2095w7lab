@@ -11,12 +11,12 @@ let taskSchema = mongoose.Schema({
     },
     status:{
         type: String,
-        // validate:{  // try array instead
-        //     validator: function(value){
-        //         return value == "InProgress" || value == "Complete";
-        //     },
-        //     message: 'Status should be InProgress or Complete'
-        // }
+        validate:{  
+            validator: function(value){
+                return value == "InProgress" || value == "Complete";
+            },
+            message: 'Status should be InProgress or Complete'
+        }
     },
     desc: String,
 });
